@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .flex-view {
+            display: flex
+        }
+
+        .half-view {
+            width: 50%;
+        }
+
+        .center-placed {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="flex-view">
+
+        <div class="half-view center-placed">
+            <h1>Add Product</h1>
+            <form id="product-form">
+                {% csrf_token %}
+                <label for="name">Product Name:</label><br>
+                <input type="text" id="name" name="name"><br>
+
+                <label for="description">Product Description:</label><br>
+                <textarea id="description" name="description"></textarea><br>
+
+                <label for="price">Product Price:</label><br>
+                <input type="number" id="price" name="price"><br><br>
+
+                <button type="submit">Add Product</button>
+            </form>
+
+        </div>
+
+        <div class="half-view center-placed">
+            <h2>Product List</h2>
+            <ul id="product-list"></ul>
+        </div>
+
+    </div>
+
+    <script>
+        $('#product-form').on('submit', function (e) {
+            e.preventDefault();
+
+
+            const name = $('#name').val();
+            const description = $('#description').val();
+            const price = $('#price').val();
+
+
+            $.ajax({
+                url: '/api/products/',
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                data: {
+                    name: name,
+                    description: description,
+                    price: price
+                },
+                success: function (response) {
+                    $('#product-list').append(
+                        `<li><a href="/products/${response.id}/">${response.name} - $${response.price}</a></li>`
+                    );
+                    alert('Product added successfully!');
+                    $('#name').val('');
+                    $('#description').val('');
+                    $('#price').val('');
+                },
+                error: function (error) {
+                    alert('Error: Unable to add the product.');
+                }
+            });
+        });
+
+        $(document).ready(function () {
+            $.ajax({
+                url: '/api/products/',
+                method: 'GET',
+                success: function (response) {
+                    response.forEach(product => {
+                        $('#product-list').append(
+                            `<li><a href="/products/${product.id}/">${product.name} - $${product.price}</a></li>`
+                        );
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

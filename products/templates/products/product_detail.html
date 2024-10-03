@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Detail</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .center-placed {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="center-placed">
+        <h1>Product Details</h1>
+        <div id="product-details">
+            <p><strong>Name:</strong> <span id="product-name"></span></p>
+            <p><strong>Description:</strong> <span id="product-description"></span></p>
+            <p><strong>Price:</strong> $<span id="product-price"></span></p>
+        </div>
+        <a href="/">Back to Product List</a>
+    </div>
+    <script>
+        $(document).ready(function () {
+
+            const productId = window.location.pathname.split('/')[2];
+
+
+            $.ajax({
+                url: `/api/products/${productId}/`,
+                method: 'GET',
+                success: function (response) {
+
+                    $('#product-name').text(response.name);
+                    $('#product-description').text(response.description);
+                    $('#product-price').text(response.price);
+                },
+                error: function () {
+                    alert('Error loading product details.');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
